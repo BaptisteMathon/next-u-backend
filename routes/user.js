@@ -84,7 +84,6 @@ module.exports = async function (fastify, opts) {
   // the request body should have a "message" field with the value "invalid credentials"
   // HINT: remember that all utility methods ( hashString and generateToken ) are asynchronous functions! they need to be used with "await"
   fastify.post('/api/users/login', async function (req, reply) {
-    // add the route implementation here
     const { email, password } = req.body.user
     const user = await database('user').where({ email }).first()
     const equal = await stringIsAMatch(password, user.password)
