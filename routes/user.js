@@ -21,7 +21,17 @@ module.exports = async function (fastify, opts) {
     method: 'GET',
     preHandler: validateToken,
     handler: async (req, reply) => {
-      // add the route implementation here
+      const user = await database('user').where({
+        id: req.userId
+      }).first()
+
+      return{
+        user: {
+          email: user.email,
+          username: user.username,
+          token: user.token
+        }
+      }
     }
   })
 
@@ -44,7 +54,15 @@ module.exports = async function (fastify, opts) {
     url: '/api/users',
     method: 'POST',
     handler: async (req, reply) => {
-      // add the route implementation here
+      const {username, email, password} = req.body.user
+      const token = await generateToken()
+      const hashedPassword = await hashString(password)
+      await database('user').insert({
+        username, 
+        email,
+        password: hashedPassword,
+        token
+      })
     }
   })
 
@@ -95,3 +113,5 @@ module.exports = async function (fastify, opts) {
     }
   })
 }
+
+// postgres://postgresql_baptiste_user:8hzfW3vorBDL58WcynPDGvtI2M3K9rXZ@dpg-ckjv1holk5ic738djrl0-a/postgresql_baptiste
